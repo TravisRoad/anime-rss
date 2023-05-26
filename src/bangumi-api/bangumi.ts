@@ -15,7 +15,9 @@ class Bangumi {
   private base: string = "https://api.bgm.tv";
 
   public async getCalendar(): Promise<calendar> {
-    const rsp = await fetch(`${this.base}/calendar`);
+    const rsp = await fetch(`${this.base}/calendar`, {
+      next: { revalidate: 3600 }, // revalidate this data every hour
+    });
     const data = await rsp.json();
     return data;
   }
