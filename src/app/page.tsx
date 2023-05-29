@@ -1,9 +1,14 @@
 "use client";
 
 import { calendar, calendarItem, item } from "@/bangumi-api/type";
-import WeekdayView from "@/components/WeekdayView";
 import { useEffect, useState } from "react";
 import StoreContext from "./lib/store";
+import RssEditor from "@/components/RssEditor";
+import WeekdayItemMobile from "@/components/WeekdayItemMobile";
+import WeekdayView from "@/components/WeekdayView";
+import WeekdayViewMobile from "@/components/WeekdayViewMobile";
+import { feed, feedCache } from "@/types/interface";
+import { time } from "console";
 
 export default function Home() {
   const [loading, setLoading] = useState<boolean>(true);
@@ -24,19 +29,58 @@ export default function Home() {
     setItems((items) => items.filter((i) => i.id !== item.id));
   };
 
+  const [feedCache, setFeedCache] = useState<feedCache>({});
+  const addFeedCache = (id: number, feed: feed, keyword: string) => {
+    // if exist
+    if (feedCache[id]) {
+      const timeout = feedCache[id].timeout;
+      clearTimeout(timeout);
+    }
+
+    const timeout = setTimeout(() => {
+      if (feedCache[id]) {
+        feedCache[id].valid = false;
+      }
+    }, 1000 * 60 * 60 * 24); // cache miss after 24 h
+    setFeedCache({
+      ...feedCache,
+      [id]: { feed, timeout: timeout, keyword, valid: true },
+    });
+  };
+  const removeFeedCache = (id: number) => {
+    if (feedCache[id] === undefined) return;
+
+    const newCache = { ...feedCache };
+    delete newCache[id];
+    // clear timeout
+    const timeout = feedCache[id].timeout;
+    clearTimeout(timeout);
+
+    setFeedCache(newCache);
+  };
+
   return (
-    <main>
-      <StoreContext.Provider value={{ items, addItem, removeItem }}>
-        <div className="flex gap-1 justify-center">
-          {!loading &&
-            calendar.map((calendarItem: calendarItem) => (
-              <WeekdayView
-                key={calendarItem.weekday.id}
-                items={calendarItem.items}
-                weekday={calendarItem.weekday.cn}
-              ></WeekdayView>
-            ))}
-        </div>
+    <main className="tablet:max-w-4xl mx-auto">
+      <StoreContext.Provider
+        value={{
+          items,
+          addItem,
+          removeItem,
+          feedCache,
+          addFeedCache,
+          removeFeedCache,
+        }}
+      >
+        <RssEditor />
+        {!loading && (
+          <WeekdayView calendar={calendar} className="tablet:flex hidden" />
+        )}
+        {!loading && (
+          <WeekdayViewMobile
+            calendar={calendar}
+            className="tablet:hidden block mx-2"
+          />
+        )}
       </StoreContext.Provider>
     </main>
   );
