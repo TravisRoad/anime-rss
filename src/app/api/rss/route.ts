@@ -1,47 +1,62 @@
+import { feed } from "@/types/interface";
 import { NextRequest, NextResponse } from "next/server";
-import { parse } from "path";
 import Parser from "rss-parser";
-
-const nyaaSearchTemplate = "https://nyaa.si/?page=rss&q=";
-const bangumiSearchTemplate = "https://bangumi.moe/rss/search/";
+import RSS from "rss";
 
 const parser = new Parser();
 
-interface RssSource {
-  nyaa: any;
-  bangumi: any;
-}
+const templates: { [key: string]: string } = {
+  nyaa: "https://nyaa.si/?page=rss&q=",
+  //   nyaa: "https://bangumi.moe/rss/search/",
+};
 
+interface InputItem {
+  keyword: string;
+  site: string;
+}
 export async function GET(request: NextRequest) {
   const { searchParams } = new URL(request.url);
-  const site = searchParams.get("site");
-  const query = searchParams.get("query");
+  const data = searchParams.get("data");
 
-  console.log(site, query);
+  if (data === "" || data === undefined || data === null)
+    return new NextResponse("", { status: 400 });
 
-  if (site === "nyaa") {
-    const q = encodeURIComponent(query as string);
-    console.log(nyaaSearchTemplate + q);
-    const feed = await fetch(nyaaSearchTemplate + q)
-      .then((data) => data.text())
-      .then((data) => parser.parseString(data));
-    return NextResponse.json(feed);
-  }
+  const json: InputItem[] = JSON.parse(data);
 
-  if (site === "bangumi") {
-    return NextResponse.json(
-      await parser.parseURL(bangumiSearchTemplate + query)
-    );
-  }
+  const promises = json
+    .map((item: InputItem) => templates[item.site] + item.keyword)
+    .map((url) => fetch(url));
 
-  return new NextResponse("", { status: 404 });
+  const feeds = await Promise.all(promises).then(async (responses) => {
+    const feedsPromises = responses.map(async (response) => {
+      const text = await response.text();
+      const feed = await parser.parseString(text);
+      return feed;
+    });
+    const feeds = await Promise.all(feedsPromises);
+    return feeds;
+  });
 
-  //   const res: RssSource = await Promise.all([
-  //     parser.parseURL(nyaaSearchTemplate + query),
-  //     parser.parseURL(bangumiSearchTemplate + query),
-  //   ]).then((feeds) => {
-  //     return { nyaa: feeds[0], bangumi: feeds[1] };
-  //   });
+  const newFeed = new RSS({
+    title: json.map((item) => item.keyword).join("_"),
+    description: `RSS Feed for ...`,
+    feed_url: ``,
+    site_url: ``,
+  });
 
-  //   return NextResponse.json(res);
+  feeds.forEach((feed) => {
+    feed.items.forEach((item) => {
+      newFeed.item({
+        title: item.title as string,
+        date: item.isoDate as string,
+        url: item.link as string,
+        guid: item.guid,
+        description: item.description,
+      });
+    });
+  });
+
+  const xml = newFeed.xml({ indent: true });
+
+  return new NextResponse(xml, { headers: { "content-type": "text/xml" } });
 }
