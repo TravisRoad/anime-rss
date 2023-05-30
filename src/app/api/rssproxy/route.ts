@@ -25,9 +25,11 @@ export async function GET(request: NextRequest) {
   }
 
   if (site === "bangumi") {
-    return NextResponse.json(
-      await parser.parseURL(bangumiSearchTemplate + query)
-    );
+    const q = encodeURIComponent(query as string);
+    const feed = await fetch(bangumiSearchTemplate + q)
+      .then((data) => data.text())
+      .then((data) => parser.parseString(data));
+    return NextResponse.json(feed);
   }
 
   return new NextResponse("", { status: 404 });

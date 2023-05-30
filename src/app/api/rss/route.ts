@@ -3,11 +3,15 @@ import { NextRequest, NextResponse } from "next/server";
 import Parser from "rss-parser";
 import RSS from "rss";
 
-const parser = new Parser();
+const parser = new Parser({
+  customFields: {
+    item: ["description", "enclosure"],
+  },
+});
 
 const templates: { [key: string]: string } = {
   nyaa: "https://nyaa.si/?page=rss&q=",
-  //   nyaa: "https://bangumi.moe/rss/search/",
+  bangumi: "https://bangumi.moe/rss/search/",
 };
 
 interface InputItem {
@@ -52,11 +56,18 @@ export async function GET(request: NextRequest) {
         url: item.link as string,
         guid: item.guid,
         description: item.description,
+        enclosure: item.enclosure,
+        custom_elements: [
+          { content: item.content },
+          { contentSnippet: item.contentSnippet },
+        ],
       });
     });
   });
 
-  const xml = newFeed.xml({ indent: true });
+  console.log(feeds[0].items[0]);
+
+  const xml = newFeed.xml({ indent: false });
 
   return new NextResponse(xml, { headers: { "content-type": "text/xml" } });
 }

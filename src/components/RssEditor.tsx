@@ -69,7 +69,7 @@ function RssContent({
       setFeedObj(feedCache[item.id].feed);
       setLoading(false);
     } else {
-      fetch(`/api/rssproxy?site=nyaa&query=${encodeURIComponent(query)}`)
+      fetch(`/api/rssproxy?site=bangumi&query=${encodeURIComponent(query)}`)
         .then((data) => data.json())
         .then((feed) => {
           setLoading(false);
@@ -217,7 +217,7 @@ export default function RssEditor() {
               items.forEach((item: item) => {
                 var keyword = item.name_cn ? item.name_cn : item.name;
                 if (feedCache[item.id]) keyword = feedCache[item.id].keyword;
-                lz.push({ keyword, site: "nyaa" });
+                lz.push({ keyword, site: "bangumi" });
               });
               const value = encodeURIComponent(JSON.stringify(lz));
               const href = "/api/rss?data=" + value;
