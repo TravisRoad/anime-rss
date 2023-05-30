@@ -45,7 +45,7 @@ function RssContent({
       setFeedObj(feedCache[item.id].feed);
       setLoading(false);
     } else {
-      fetch(`/api/rssproxy?site=nyaa&query=${encodeURIComponent(query)}`)
+      fetch(`/api/rssproxy?site=bangumi&query=${encodeURIComponent(query)}`)
         .then((data) => data.json())
         .then((feed) => {
           setLoading(false);
