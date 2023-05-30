@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import type { item } from "@/bangumi-api/type";
 import Image from "next/image";
 import StoreContext from "@/app/lib/store";
@@ -15,8 +15,12 @@ function Item({ item }: { item: item }) {
     } else {
       addItem(item);
     }
-    setIsChecked(!isChecked);
   };
+
+  useEffect(() => {
+    const i = items.find((i) => i.id === item.id);
+    setIsChecked(i !== undefined);
+  }, [item.id, items]);
 
   return (
     <div

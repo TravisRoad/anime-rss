@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import type { item } from "@/bangumi-api/type";
 import Image from "next/image";
 import StoreContext from "@/app/lib/store";
@@ -15,8 +15,12 @@ export default function WeekdayItemMobile({ item }: { item: item }) {
     } else {
       addItem(item);
     }
-    setIsChecked(!isChecked);
   };
+
+  useEffect(() => {
+    const i = items.find((i) => i.id === item.id);
+    setIsChecked(i !== undefined);
+  }, [item.id, items]);
 
   return (
     <div
@@ -42,7 +46,7 @@ export default function WeekdayItemMobile({ item }: { item: item }) {
       <div
         className={`absolute bg-black z-10 w-full h-full top-0 left-0 ${
           isChecked ? "opacity-70" : "opacity-0"
-        } transition-all duration-150 ease-in`}
+        } `}
       ></div>
       <div className="absolute bottom-0 text-xs text-white bg-slate-600/80 group-hover:bg-slate-700 w-full text-center overflow-x-clip whitespace-nowrap group-hover:whitespace-normal">
         {name}

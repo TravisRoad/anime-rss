@@ -82,8 +82,8 @@ function RssContent({
 
   return (
     <>
-      <div className="mt-2 mb-2 flex sm:items-center ">
-        <label className="ml-2 sm:block hidden">搜索关键字</label>
+      <div className="mt-2 mb-2 flex items-center ">
+        <label className="ml-2">搜索关键字</label>
         <input
           type="text"
           onChange={(e: ChangeEvent<HTMLInputElement>) =>
@@ -146,7 +146,7 @@ function RssContent({
 }
 
 export default function RssEditor() {
-  const { items } = useContext(StoreContext);
+  const { items, removeItem } = useContext(StoreContext);
   const [keywordMap, setKeywordMap] = useState<{ [key: number]: string }>({});
   const { feedCache, addFeedCache, removeFeedCache } = useContext(StoreContext);
   const [loading, setLoading] = useState<boolean>(false);
@@ -167,17 +167,20 @@ export default function RssEditor() {
   }, [items]);
 
   return (
-    <div className=" my-4 tablet:max-w-[64rem] mx-auto sm:max-w-[28rem] max-w-[22rem]">
+    <div className=" my-4 tablet:max-w-[64rem] mx-auto sm:max-w-[28rem] max-w-[22rem] max-h-[50vh]">
       <Toaster />
-      <Tab.Group as="div" className="flex gap-x-2 min-h-[30vh] max-h-[35vh]">
-        <div className="flex flex-col min-h-[30vh] max-h-[35vh] basis-1/4 gap-y-4">
-          <Tab.List className="overflow-y-auto flex flex-col gap-y-1 items-start basis-4/5 border-2 rounded-md px-2 py-1 bg-nord-10/40">
+      <Tab.Group
+        as="div"
+        className="flex tablet:flex-row flex-col gap-x-2 tablet:min-h-[30vh] tablet:max-h-[35vh] max-h-[50vh] min-h-[50vh] "
+      >
+        <div className="flex flex-col tablet:min-h-[30vh] tablet:max-h-[35vh] min-h-[25vh] max-h-[25vh] basis-1/4 tablet:gap-y-4 mb-2 tablet:min-w-[30%]">
+          <Tab.List className="overflow-y-auto space-y-1 items-start tablet:basis-4/5 border-2 rounded-md px-2 py-1 bg-nord-10/40 min-h-[19vh] ">
             {items.map((item: item) => (
               <Tab
                 key={item.id}
                 className={({ selected }: { selected: boolean }) =>
                   classNames(
-                    "whitespace-nowrap overflow-hidden w-full text-start text-ellipsis text-nord-0 py-0.5 px-1 rounded-md",
+                    " w-full text-start text-nord-0 py-0.5 px-1 rounded-md flex justify-between overflow-hidden flex-shrink-0",
                     selected
                       ? "bg-nord-5 shadow"
                       : "hover:bg-nord-5/20 hover:text-white"
@@ -185,11 +188,28 @@ export default function RssEditor() {
                 }
                 title={item.name_cn ? item.name_cn : item.name}
               >
-                {item.name_cn ? item.name_cn : item.name}
+                <span className="whitespace-nowrap text-ellipsis overflow-hidden">
+                  {item.name_cn ? item.name_cn : item.name}
+                </span>
+                <span className="px-2 rounded" onClick={() => removeItem(item)}>
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    strokeWidth={1.5}
+                    stroke="currentColor"
+                    className="w-6 h-6"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      d="M6 18L18 6M6 6l12 12"
+                    />
+                  </svg>
+                </span>
               </Tab>
             ))}
           </Tab.List>
-          {/* <div className="basis-1/6"> */}
           <button
             onClick={() => {
               setLoading(true);
@@ -238,14 +258,14 @@ export default function RssEditor() {
               disable
                 ? "cursor-not-allowed grayscale text-gray-400"
                 : "hover:bg-nord-10/60 hover:text-white hover:ring-2"
-            } md:text-base text-sm`}
+            } md:text-base text-sm mt-2 tablet:mt-0`}
             disabled={disable}
           >
             {loading ? "生成中..." : "获得聚合 RSS 链接"}
           </button>
           {/* </div> */}
         </div>
-        <Tab.Panels className="basis-3/4 border-2 rounded-md px-2 py-1 text-xs overflow-x-hidden">
+        <Tab.Panels className="basis-3/4 border-2 rounded-md px-2 py-1 text-xs overflow-x-hidden min-h-[25vh]">
           <div>
             {items.map((item: item) => (
               <Tab.Panel key={item.id}>
