@@ -61,6 +61,9 @@ export default function Home() {
 
   return (
     <main className="tablet:max-w-4xl mx-auto">
+      <h1 className="flex w-full items-center justify-center mt-4 tablet:text-2xl text-xl font-bold bg-gradient-to-r bg-clip-text from-pink-600 to-pink-50 text-transparent">
+        新番 RSS 聚合
+      </h1>
       <StoreContext.Provider
         value={{
           items,
