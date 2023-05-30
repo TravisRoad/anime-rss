@@ -1,34 +1,12 @@
-This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+# Anime-rss
 
-## Getting Started
+聚合本季度新番 rss，不用再一个一个添加进 qbittorrent 啦
 
-First, run the development server:
+## 使用
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-```
+进入网页 https://anime-rss.vercel.app/，选择你想要跟踪的新番，筛选你需要的关键字，比如 `sweetsub 跃动青春`。
+点击 `获得聚合RSS链接` 按钮，复制链接放入 qbittorrent 的 rss 订阅当中。
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## TODO
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
-
-This project uses [`next/font`](https://nextjs.org/docs/basic-features/font-optimization) to automatically optimize and load Inter, a custom Google Font.
-
-## Learn More
-
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js/) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/deployment) for more details.
+- [ ] 提供两个可选的资源站支持，目前仅支持 bangumi.moe 或 nyaa.si
